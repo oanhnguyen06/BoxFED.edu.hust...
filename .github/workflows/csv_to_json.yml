@@ -1,0 +1,31 @@
+name: Auto build JSON from CSV
+
+on:
+  push:
+    paths:
+      - "data/**/*.csv"
+
+jobs:
+  build-json:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Run CSV to JSON tool
+        run: |
+          python tools/csv_to_json.py
+
+      - name: Commit generated JSON
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/lecturers.json
+          git commit -m "Auto-generate lecturers.json from CSV" || echo "No changes to commit"
+          git push
