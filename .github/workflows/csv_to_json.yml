@@ -1,4 +1,4 @@
-name: Auto build JSON from CSV
+name: Auto build lecturers.json
 
 on:
   push:
@@ -10,34 +10,28 @@ permissions:
   contents: write
 
 jobs:
-  build-json:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      - name: Generate lecturers.json
-        run: |
-          python tool/csv_to_json.py
+      - name: Generate JSON
+        run: python tool/csv_to_json.py
 
-      - name: Commit & push if changed
+      - name: Commit & push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
           git add data/lecturers.json
-
           if git diff --cached --quiet; then
-            echo "No changes to commit"
+            echo "No changes"
           else
             git commit -m "chore: auto-generate lecturers.json"
-            git push origin HEAD:main
+            git push
           fi
