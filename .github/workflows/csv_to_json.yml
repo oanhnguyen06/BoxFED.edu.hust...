@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "data/**/*.csv"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -15,17 +16,19 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      - name: Run CSV to JSON tool
+      - name: Generate lecturers.json
         run: |
           python tool/csv_to_json.py
 
-      - name: Commit generated JSON
+      - name: Commit & push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -35,6 +38,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Auto-generate lecturers.json from CSV"
-            git push
+            git commit -m "chore: auto-generate lecturers.json"
+            git push origin HEAD:main
           fi
