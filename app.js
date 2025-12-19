@@ -5,7 +5,7 @@ let lecturers = [];
 let currentPage = 1;
 const itemsPerPage = 4;
 
-fetch("./data/lecturers.json")
+fetch("data/lecturers.json")
   .then(res => {
     if (!res.ok) throw new Error("Không tìm thấy lecturers.json");
     return res.json();
@@ -73,8 +73,10 @@ function renderPagination() {
 function goPage(p) {
   currentPage = p;
   renderLecturers();
-  document.querySelector(".container").scrollIntoView({ behavior: "smooth" });
+  document.querySelector(".container")
+    .scrollIntoView({ behavior: "smooth" });
 }
+
 // ================= DỮ LIỆU GIẢNG VIÊN =================
 // NOTE: ảnh sẽ là đường dẫn img/<ho_ten>.jpg 
 const lecturers = [
