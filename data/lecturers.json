@@ -1,0 +1,63 @@
+// ===============================
+// LOAD DATA FROM JSON (AUTO)
+// ===============================
+let lecturers = [];
+
+fetch("data/lecturers.json")
+  .then(res => {
+    if (!res.ok) throw new Error("Không tìm thấy lecturers.json");
+    return res.json();
+  })
+  .then(data => {
+    lecturers = data;
+    renderLecturers();
+  })
+  .catch(err => {
+    console.error("Lỗi load dữ liệu:", err);
+  });
+
+
+// ===============================
+// RENDER LECTURERS
+// ===============================
+function renderLecturers() {
+  const container = document.getElementById("lecturer-list");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  lecturers.forEach(l => {
+    const card = document.createElement("div");
+    card.className = "lecturer-card";
+    card.dataset.key = l.key;
+
+    card.innerHTML = `
+      <img src="${l.img || "img/default.png"}" alt="${l.name}">
+      <h3>${l.name}</h3>
+      <p class="title">${l.title}</p>
+      <p class="dept">${l.dept}</p>
+
+      ${renderTags("Đào tạo", l.train)}
+      ${renderTags("Công tác", l.work)}
+      ${renderTags("Lĩnh vực", l.area)}
+      ${renderTags("Giảng dạy", l.teach)}
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+
+// ===============================
+// RENDER TAG GROUP
+// ===============================
+function renderTags(label, items) {
+  if (!items || items.length === 0) return "";
+
+  return `
+    <div class="tag-group">
+      <span class="tag-label">${label}:</span>
+      ${items.map(i => `<span class="tag">${i}</span>`).join("")}
+    </div>
+  `;
+}
